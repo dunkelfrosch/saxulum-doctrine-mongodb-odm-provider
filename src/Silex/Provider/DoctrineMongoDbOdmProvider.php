@@ -3,8 +3,9 @@
 namespace Saxulum\DoctrineMongoDbOdm\Silex\Provider;
 
 use Saxulum\DoctrineMongoDbOdm\Provider\DoctrineMongoDbOdmProvider as BaseDoctrineMongoDbOdmProvider;
+use Pimple\Container;
 use Silex\Application;
-use Silex\ServiceProviderInterface;
+use Pimple\ServiceProviderInterface;
 
 class DoctrineMongoDbOdmProvider implements ServiceProviderInterface
 {
@@ -18,9 +19,9 @@ class DoctrineMongoDbOdmProvider implements ServiceProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function register(Application $app)
+    public function register(Container $container)
     {
         $pimpleServiceProvider = new BaseDoctrineMongoDbOdmProvider;
-        $pimpleServiceProvider->register($app);
+        $pimpleServiceProvider->register($container);
     }
 }
