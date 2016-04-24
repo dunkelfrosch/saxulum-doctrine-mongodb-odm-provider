@@ -2,69 +2,48 @@
 
 namespace Saxulum\Tests\DoctrineMongoDbOdm\Silex\Provider;
 
+use Silex\Application;
+use Doctrine\ODM\MongoDB\Configuration as MongoDbConfiguration;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Saxulum\DoctrineMongoDb\Silex\Provider\DoctrineMongoDbProvider;
 use Saxulum\DoctrineMongoDbOdm\Silex\Provider\DoctrineMongoDbOdmProvider;
 use Saxulum\Tests\DoctrineMongoDbOdm\Document\Page;
-use Silex\Application;
+use Saxulum\Tests\DoctrineTestCase;
 
-class DoctrineMongoDbOdmProviderTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class DoctrineMongoDbOdmProviderTest
+ *
+ * @package Saxulum\Tests\DoctrineMongoDbOdm\Silex\Provider
+ */
+class DoctrineMongoDbOdmProviderTest extends DoctrineTestCase
 {
-    protected function createMockDefaultAppAndDeps()
-    {
-        $app = new Application;
-
-        $eventManager = $this->getMock('Doctrine\Common\EventManager');
-        $connection = $this
-            ->getMockBuilder('Doctrine\MongoDB\Connection')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $connection
-            ->expects($this->any())
-            ->method('getEventManager')
-            ->will($this->returnValue($eventManager));
-
-        $app['mongodbs'] = new \Pimple(array(
-            'default' => $connection,
-        ));
-
-        $app['mongodbs.event_manager'] = new \Pimple(array(
-            'default' => $eventManager,
-        ));
-
-        return array($app, $connection, $eventManager);;
-    }
-
-    protected function createMockDefaultApp()
-    {
-        list ($app, $connection, $eventManager) = $this->createMockDefaultAppAndDeps();
-
-        return $app;
-    }
-
     /**
-     * Test registration
+     * check/test registration
      */
     public function testRegister()
     {
+        /** @var Application $app */
         $app = $this->createMockDefaultApp();
-
         $app->register(new DoctrineMongoDbOdmProvider);
+        /** @var MongoDbConfiguration $mongoDbConfig */
+        $mongoDbConfig = $app['mongodbodm.dm.config'];
 
         $this->assertEquals($app['mongodbodm.dm'], $app['mongodbodm.dms']['default']);
-        $this->assertInstanceOf('Doctrine\Common\Cache\ArrayCache', $app['mongodbodm.dm.config']->getMetadataCacheImpl());
-        $this->assertInstanceOf('Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain', $app['mongodbodm.dm.config']->getMetadataDriverImpl());
+        $this->assertInstanceOf('Doctrine\Common\Cache\ArrayCache', $mongoDbConfig->getMetadataCacheImpl());
+        $this->assertInstanceOf('Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain', $mongoDbConfig->getMetadataDriverImpl());
     }
 
+    /**
+     * check/test annotation mapping
+     */
     public function testAnnotationMapping()
     {
         if (!extension_loaded('mongo')) {
             $this->markTestSkipped('mongo is not available');
         }
 
-        $proxyPath = $this->getCacheDir() . '/doctrine/proxies';
-        $hydratorPath = $this->getCacheDir() . '/doctrine/hydrator';
+        $proxyPath = sprintf('%s/doctrine/proxies', $this->getCacheDir());
+        $hydratorPath = sprintf('%s/doctrine/hydrator', $this->getCacheDir());
 
         @mkdir($proxyPath, 0777, true);
         @mkdir($hydratorPath, 0777, true);
@@ -77,21 +56,21 @@ class DoctrineMongoDbOdmProviderTest extends \PHPUnit_Framework_TestCase
             )
         ));
 
-        $app->register(new DoctrineMongoDbOdmProvider, array(
+        $app->register(new DoctrineMongoDbOdmProvider, [
             "mongodbodm.proxies_dir" => $proxyPath,
             "mongodbodm.hydrator_dir" => $hydratorPath,
-            "mongodbodm.dm.options" => array(
+            "mongodbodm.dm.options" => [
                 "database" => "test",
-                "mappings" => array(
-                    array(
+                "mappings" => [
+                    [
                         "type" => "annotation",
                         "namespace" => "Saxulum\\Tests\\DoctrineMongoDbOdm\\Document",
                         "path" => __DIR__."../../Document",
                         "use_simple_annotation_reader" => false
-                    )
-                ),
-            ),
-        ));
+                    ]
+                ],
+            ],
+        ]);
 
         $title = 'title';
         $body = 'body';
@@ -103,28 +82,13 @@ class DoctrineMongoDbOdmProviderTest extends \PHPUnit_Framework_TestCase
         $app['mongodbodm.dm']->persist($page);
         $app['mongodbodm.dm']->flush();
 
-        $repository = $app['mongodbodm.dm']
-            ->getRepository("Saxulum\\Tests\\DoctrineMongoDbOdm\\Document\\Page")
-        ;
         /** @var DocumentRepository $repository */
+        $repository = $app['mongodbodm.dm']->getRepository("Saxulum\\Tests\\DoctrineMongoDbOdm\\Document\\Page");
 
-        $pageFromDb = $repository->findOneBy(array(), array('id' => 'DESC'));
         /** @var Page $pageFromDb */
+        $pageFromDb = $repository->findOneBy(['id' => 'DESC']);
 
         $this->assertEquals($title, $pageFromDb->getTitle());
         $this->assertEquals($body, $pageFromDb->getBody());
-    }
-
-    /**
-     * @return string
-     */
-    protected function getCacheDir()
-    {
-        $cacheDir =  __DIR__ . '/../../../cache';
-        if (!is_dir($cacheDir)) {
-            mkdir($cacheDir, 0777, true);
-        }
-
-        return $cacheDir;
     }
 }

@@ -3,42 +3,15 @@
 namespace Saxulum\Tests\DoctrineMongoDbOdm\Provider;
 
 use Saxulum\DoctrineMongoDbOdm\Provider\DoctrineMongoDbOdmProvider;
+use Saxulum\Tests\DoctrineTestCase;
 
-class DoctrineMongoDbOdmProviderTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class DoctrineMongoDbOdmProviderTest
+ * 
+ * @package Saxulum\Tests\DoctrineMongoDbOdm\Provider
+ */
+class DoctrineMongoDbOdmProviderTest extends DoctrineTestCase
 {
-    protected function createMockDefaultAppAndDeps()
-    {
-        $container = new \Pimple;
-
-        $eventManager = $this->getMock('Doctrine\Common\EventManager');
-        $connection = $this
-            ->getMockBuilder('Doctrine\MongoDB\Connection')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $connection
-            ->expects($this->any())
-            ->method('getEventManager')
-            ->will($this->returnValue($eventManager));
-
-        $container['mongodbs'] = new \Pimple(array(
-            'default' => $connection,
-        ));
-
-        $container['mongodbs.event_manager'] = new \Pimple(array(
-            'default' => $eventManager,
-        ));
-
-        return array($container, $connection, $eventManager);;
-    }
-
-    protected function createMockDefaultApp()
-    {
-        list ($container, $connection, $eventManager) = $this->createMockDefaultAppAndDeps();
-
-        return $container;
-    }
-
     /**
      * Test registration (test expected class for default implementations)
      */

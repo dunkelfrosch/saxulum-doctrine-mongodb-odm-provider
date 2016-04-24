@@ -21,8 +21,14 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\YamlDriver;
 use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Pimple\Container;
+use Pimple\ServiceProviderInterface;
 
-class DoctrineMongoDbOdmProvider
+/**
+ * Class DoctrineMongoDbOdmProvider
+ *
+ * @package Saxulum\DoctrineMongoDbOdm\Provider
+ */
+class DoctrineMongoDbOdmProvider implements ServiceProviderInterface
 {
     /**
      * @param Container $container
@@ -35,12 +41,12 @@ class DoctrineMongoDbOdmProvider
             }
         }
 
-        $container['mongodbodm.dm.default_options'] = array(
+        $container['mongodbodm.dm.default_options'] = [
             'connection' => 'default',
             'database' => null,
-            'mappings' => array(),
-            'types' => array(),
-        );
+            'mappings' => [],
+            'types' => [],
+        ];
 
         $container['mongodbodm.dms.options.initializer'] = $container->protect(function () use ($container) {
             static $initialized = false;
@@ -52,7 +58,7 @@ class DoctrineMongoDbOdmProvider
             $initialized = true;
 
             if (!isset($container['mongodbodm.dms.options'])) {
-                $container['mongodbodm.dms.options'] = array('default' => isset($container['mongodbodm.dm.options']) ? $container['mongodbodm.dm.options'] : array());
+                $container['mongodbodm.dms.options'] = array('default' => isset($container['mongodbodm.dm.options']) ? $container['mongodbodm.dm.options'] : []);
             }
 
             $tmp = $container['mongodbodm.dms.options'];
@@ -359,7 +365,7 @@ class DoctrineMongoDbOdmProvider
         });
 
         $container['mongodbodm.generate_psr0_mapping'] = $container->protect(function ($resourceMapping) use ($container) {
-            $mapping = array();
+            $mapping = [];
             foreach ($resourceMapping as $resourceNamespace => $entityNamespace) {
                 $directory = $container['psr0_resource_locator']->findFirstDirectory($resourceNamespace);
                 if (!$directory) {
