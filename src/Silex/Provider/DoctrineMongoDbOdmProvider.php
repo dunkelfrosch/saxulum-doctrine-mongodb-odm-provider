@@ -2,11 +2,16 @@
 
 namespace Saxulum\DoctrineMongoDbOdm\Silex\Provider;
 
-use Saxulum\DoctrineMongoDbOdm\Provider\DoctrineMongoDbOdmProvider as BaseDoctrineMongoDbOdmProvider;
-use Pimple\Container;
 use Silex\Application;
+use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Saxulum\DoctrineMongoDbOdm\Provider\DoctrineMongoDbOdmProvider as BaseDoctrineMongoDbOdmProvider;
 
+/**
+ * Class DoctrineMongoDbOdmProvider
+ * 
+ * @package Saxulum\DoctrineMongoDbOdm\Silex\Provider
+ */
 class DoctrineMongoDbOdmProvider implements ServiceProviderInterface
 {
     /**
