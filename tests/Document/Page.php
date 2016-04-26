@@ -5,7 +5,16 @@ namespace Saxulum\Tests\DoctrineMongoDbOdm\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * @ODM\Document
+ * Class Page
+ *
+ * @ODM\Document(
+ *     collection="Page",
+ *     requireIndexes=false
+ * )
+ *
+ * @package Saxulum\Tests\DoctrineMongoDbOdm\Document
+ *
+ * @codeCoverageIgnore
  */
 class Page
 {
@@ -17,13 +26,13 @@ class Page
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $title;
 
     /**
      * @var string
-     * @ODM\String
+     * @ODM\Field(type="string")
      */
     protected $body;
 
