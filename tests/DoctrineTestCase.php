@@ -4,8 +4,8 @@ namespace Saxulum\Tests;
 
 use Silex\Application;
 use Pimple\Container;
-use Doctrine\ODM\MongoDB\Configuration as MongoDbConfiguration;
 use Saxulum\DoctrineMongoDbOdm\Provider\DoctrineMongoDbOdmProvider;
+use Doctrine\ODM\MongoDB\Configuration as MongoDbConfiguration;
 
 /**
  * Class DoctrineTestCase

@@ -2,6 +2,7 @@
 
 namespace Saxulum\Tests\DoctrineMongoDbOdm\Provider;
 
+use MongoDB\Exception\InvalidArgumentException;
 use Saxulum\DoctrineMongoDbOdm\Provider\DoctrineMongoDbOdmProvider;
 use Saxulum\Tests\DoctrineTestCase;
 
@@ -207,7 +208,6 @@ class DoctrineMongoDbOdmProviderTest extends DoctrineTestCase
     public function testInvalidMappingAsOption()
     {
         $container = $this->createMockDefaultApp();
-
         $doctrineOrmServiceProvider = new DoctrineMongoDbOdmProvider;
         $doctrineOrmServiceProvider->register($container);
 

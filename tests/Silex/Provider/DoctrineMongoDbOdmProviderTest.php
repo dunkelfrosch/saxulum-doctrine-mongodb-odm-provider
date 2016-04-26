@@ -2,6 +2,7 @@
 
 namespace Saxulum\Tests\DoctrineMongoDbOdm\Silex\Provider;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Silex\Application;
 use Doctrine\ODM\MongoDB\Configuration as MongoDbConfiguration;
 use Doctrine\ODM\MongoDB\DocumentRepository;
@@ -38,10 +39,6 @@ class DoctrineMongoDbOdmProviderTest extends DoctrineTestCase
      */
     public function testAnnotationMapping()
     {
-        if (!extension_loaded('mongo')) {
-            $this->markTestSkipped('mongo is not available');
-        }
-
         $proxyPath = sprintf('%s/doctrine/proxies', $this->getCacheDir());
         $hydratorPath = sprintf('%s/doctrine/hydrator', $this->getCacheDir());
 
@@ -72,22 +69,24 @@ class DoctrineMongoDbOdmProviderTest extends DoctrineTestCase
             ],
         ]);
 
-        $title = 'title';
-        $body = 'body';
+        $title = 'my test title';
+        $body = 'my test body';
 
         $page = new Page();
         $page->setTitle($title);
         $page->setBody($body);
 
-        $app['mongodbodm.dm']->persist($page);
-        $app['mongodbodm.dm']->flush();
+        /** @var DocumentManager $dm */
+        $dm = $app['mongodbodm.dm'];
+        $dm->persist($page);
+        $dm->flush();
 
         /** @var DocumentRepository $repository */
-        $repository = $app['mongodbodm.dm']->getRepository("Saxulum\\Tests\\DoctrineMongoDbOdm\\Document\\Page");
+        $repository = $dm->getRepository("Saxulum\\Tests\\DoctrineMongoDbOdm\\Document\\Page");
 
         /** @var Page $pageFromDb */
-        $pageFromDb = $repository->findOneBy(['id' => 'DESC']);
-
+        $pageFromDb = $repository->find($page->getId());
+        $this->assertTrue($pageFromDb instanceof Page);
         $this->assertEquals($title, $pageFromDb->getTitle());
         $this->assertEquals($body, $pageFromDb->getBody());
     }
