@@ -211,13 +211,13 @@ class DoctrineMongoDbOdmProviderTest extends DoctrineTestCase
         $doctrineOrmServiceProvider = new DoctrineMongoDbOdmProvider;
         $doctrineOrmServiceProvider->register($container);
 
-        $container['mongodbodm.dm.options'] = array(
-            'mappings' => array(
+        $container['mongodbodm.dm.options'] = [
+            'mappings' => [
                 'type' => 'annotation',
                 'namespace' => 'Foo\Entities',
                 'path' => __DIR__.'/src/Foo/Entities',
-            ),
-        );
+            ],
+        ];
 
         $container['mongodbodm.dms.config'];
     }
@@ -235,16 +235,16 @@ class DoctrineMongoDbOdmProviderTest extends DoctrineTestCase
         $alias = 'Foo';
         $namespace = 'Foo\Entities';
 
-        $container['mongodbodm.dm.options'] = array(
-            'mappings' => array(
-                array(
+        $container['mongodbodm.dm.options'] = [
+            'mappings' => [
+                [
                     'type' => 'annotation',
                     'namespace' => $namespace,
                     'path' => __DIR__.'/src/Foo/Entities',
                     'alias' => $alias
-                )
-            ),
-        );
+                ]
+            ],
+        ];
 
         $this->assertEquals($namespace, $container['mongodbodm.dm.config']->getDocumentNameSpace($alias));
     }
